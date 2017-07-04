@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block form %}
+<form method="post" id='the_form'>
+	{% csrf_token %}
+	<div id='container'>
+		{{ form.as_p }}
+	</div>
+	<button type="submit">Sign up</button>
+</form>
+{% endblock %}
+
+{% block javascript %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+	$('#the_form').on('submit', function(e) {
+		e.preventDefault();
+		$.ajax({
+			type: 'POST',
+			url: '{{ request.path }}',
+			headers: {"X-CSRFToken": '{{ csrf_token }}'},
+			data: $('#the_form').serialize(),
+			success: function (data) {
+				window.location.replace(data.url);
+			},
+			error: function (data) {
+				$('#container').html(data.responseJSON.html);
+			}
+		}
+		)
+	})
+</script>
+{% endblock %}
